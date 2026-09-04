@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Ad Skipper</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 320px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #ff0000, #cc0000);
+      padding: 16px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .header .subtitle {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: #16213e;
+      border-bottom: 1px solid #0f3460;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #4caf50;
+      animation: pulse 2s infinite;
+    }
+
+    .status-dot.disabled {
+      background: #757575;
+      animation: none;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .status-text {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .controls {
+      padding: 16px;
+    }
+
+    .control-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #0f3460;
+    }
+
+    .control-item:last-child {
+      border-bottom: none;
+    }
+
+    .control-label {
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .control-label .icon {
+      font-size: 16px;
+    }
+
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #555;
+      transition: 0.3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #ff4444;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .stats {
+      padding: 12px 16px;
+      background: #16213e;
+      border-top: 1px solid #0f3460;
+      text-align: center;
+    }
+
+    .stats-number {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ff4444;
+    }
+
+    .stats-label {
+      font-size: 11px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    .footer {
+      padding: 10px 16px;
+      text-align: center;
+      font-size: 10px;
+      color: #666;
+      border-top: 1px solid #0f3460;
+    }
+
+    .footer a {
+      color: #ff4444;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>YouTube Ad Skipper</h1>
+    <div class="subtitle">自动跳过 YouTube 广告</div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <span class="status-text" id="statusText">运行中</span>
+  </div>
+
+  <div class="controls">
+    <div class="control-item">
+      <div class="control-label">
+        <span class="icon">⚡</span>
+        <span>启用广告跳过</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="toggleEnabled" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="control-item">
+      <div class="control-label">
+        <span class="icon">⏭️</span>
+        <span>自动点击跳过</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="toggleAutoSkip" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="control-item">
+      <div class="control-label">
+        <span class="icon">🔇</span>
+        <span>广告静音</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="toggleAutoMute" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="control-item">
+      <div class="control-label">
+        <span class="icon">⏩</span>
+        <span>快进不可跳过广告</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="toggleFastForward" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stats-number" id="skipCount">0</div>
+    <div class="stats-label">已跳过广告</div>
+  </div>
+
+  <div class="footer">
+    v1.0.0 | <a href="https://github.com/xiaoyudianbaba/YouTubeAdSkipper" target="_blank">GitHub</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
