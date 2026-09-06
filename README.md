@@ -1,4 +1,4 @@
-# YouTube Ad Skipper
+#yg广告Ad Skipper
 
 自动跳过  广告的 Chrome 扩展和 Tampermonkey 脚本。
 
