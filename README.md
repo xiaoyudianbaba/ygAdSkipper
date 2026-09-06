@@ -1,6 +1,6 @@
 # YouTube Ad Skipper
 
-自动跳过 YouTube 广告的 Chrome 扩展和 Tampermonkey 脚本。
+自动跳过  广告的 Chrome 扩展和 Tampermonkey 脚本。
 
 ## 功能特性
 
